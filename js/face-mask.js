@@ -69,36 +69,34 @@ $("#mask-list ul li").click(function () {
     }
 });
 
-$("#mask-btn").click(function () {
-    $("#canvas").css({width: imageElement.clientWidth, height: imageElement.clientHeight});
-    startFaceMask()
-        .then(res => {
-            maskOnImage = true;
-            detectFaces();
-        });
-});
 
 $('#closeError').click(function() {
     $("#webcam-switch").prop('checked', false).change();
 });
 
 async function startFaceMask() {
+    await tf.setBackend('wasm');
+
     return new Promise((resolve, reject) => {
-        $(".loading").removeClass('d-none');
-        facemesh.load().then(mdl => { 
-            model = mdl;
-            $(".loading").addClass('d-none');
-            console.log("model loaded");
-            if(isVideo && webcam.facingMode == 'user'){
-                detectFace = true;
+
+        webcamElement.addEventListener('loadeddata', async (event) => {
+            console.log('*************** loadeddata');
+            $(".loading").removeClass('d-none');
+            try {
+                model = await facemesh.load()
+                $(".loading").addClass('d-none');
+                console.log("model loaded");
+                if (isVideo && webcam.facingMode == 'user') {
+                    detectFace = true;
+                }
+
+                cameraFrame = detectFaces();
+                resolve();
+
+            } catch (err) {
+                displayError('Fail to load face mesh model<br/>Please refresh the page to try again');
+                reject(err);
             }
-            
-            cameraFrame =  detectFaces();
-            resolve();
-        })
-        .catch(err => {
-            displayError('Fail to load face mesh model<br/>Please refresh the page to try again');
-            reject(error);
         });
     });
 }
@@ -106,6 +104,8 @@ async function startFaceMask() {
 async function detectFaces() {
     let inputElement = isVideo? webcamElement : imageElement;
     let flipHorizontal = isVideo;
+
+
     await model.estimateFaces(inputElement, false, flipHorizontal).then(predictions => {
         //console.log(predictions);
         drawMask(predictions);
@@ -120,6 +120,8 @@ async function detectFaces() {
 }
 
 function drawMask(predictions){
+    console.log('*******');
+    console.log(predictions);
     if(masks.length != predictions.length){
         clearCanvas();
     }   
@@ -185,10 +187,10 @@ function drawMask(predictions){
             
             maskTop = maskCoordinate.top - ((maskHeight * (maskSizeAdjustmentHeight-1))/2) - (maskHeight * maskSizeAdjustmentTop);
             maskLeft = maskCoordinate.left - ((maskWidth * (maskSizeAdjustmentWidth-1))/2) + (maskWidth * maskSizeAdjustmentLeft);
-            
+
             maskElement.css({
                 top: maskTop, 
-                left: maskLeft, 
+                left: maskLeft,
                 width: maskWidth * maskSizeAdjustmentWidth,
                 height: maskHeight * maskSizeAdjustmentHeight,
                 position:'absolute'
@@ -233,11 +235,6 @@ function switchSource(){
         containerElement = $("#webcam-container");
         $("#button-control").addClass("d-none");
         resizeCanvas();
-    }else{
-        canvasElement.style.transform ="";
-        containerElement = $("#image-container");
-        $("#button-control").removeClass("d-none");
-        $("#canvas").css({width: imageElement.clientWidth, height: imageElement.clientHeight});
     }
     $("#canvas").appendTo(containerElement);
     $(".loading").appendTo(containerElement);

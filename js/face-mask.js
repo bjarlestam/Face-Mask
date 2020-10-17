@@ -145,22 +145,9 @@ function drawMask(predictions){
 
 function getCoordinate(x,y){
     if(isVideo){
-        if(webcam.webcamList.length ==1 || window.innerWidth/window.innerHeight >= webcamElement.width/webcamElement.height){
-            ratio = canvasElement.clientHeight/webcamElement.height;
-            resizeX = x*ratio;
-            resizeY = y*ratio;
-        }
-        else if(window.innerWidth>=1024){
-            ratio = 2;
-            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
-            resizeX = x*ratio - leftAdjustment;
-            resizeY = y*ratio;
-        }
-        else{
-            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.35
-            resizeX = x - leftAdjustment;
-            resizeY = y;
-        }
+        ratio = canvasElement.clientHeight/webcamElement.height;
+        resizeX = x*ratio;
+        resizeY = y*ratio;
 
         return [resizeX, resizeY];
     }

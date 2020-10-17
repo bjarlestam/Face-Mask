@@ -162,7 +162,7 @@ function getCoordinate(x,y){
             leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.5
             resizeX = x - leftAdjustment;
             resizeY = y;
-            $('#message').text('tre');
+            $('#message').text('treeee');
         }
 
         return [resizeX, resizeY];

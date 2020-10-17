@@ -159,7 +159,7 @@ function getCoordinate(x,y){
             $('#message').text('två');
         }
         else{
-            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.2
+            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.5
             resizeX = x - leftAdjustment;
             resizeY = y;
             $('#message').text('tre');

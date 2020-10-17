@@ -150,11 +150,16 @@ function getCoordinate(x,y){
             resizeX = x*ratio;
             resizeY = y*ratio;
         }
-        else {
+        else if(window.innerWidth>=1024){
             ratio = 2;
             leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
             resizeX = x*ratio - leftAdjustment;
             resizeY = y*ratio;
+        }
+        else{
+            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.35
+            resizeX = x - leftAdjustment;
+            resizeY = y;
         }
 
         return [resizeX, resizeY];

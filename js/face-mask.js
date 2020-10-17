@@ -12,53 +12,6 @@ let maskOnImage = false;
 let masks = [];
 let maskKeyPointIndexs = [10, 234, 152, 454]; //overhead, left Cheek, chin, right cheek
 
-
-$("#webcam-switch").change(function () {
-    if(this.checked){
-        $('.md-modal').addClass('md-show');
-        webcam.start()
-            .then(result =>{
-                isVideo = true;
-                cameraStarted();
-                switchSource();               
-                console.log("webcam started");                
-                maskOnImage = false;
-                startFaceMask();
-            })
-            .catch(err => {
-                displayError();
-            });
-    }
-    else {      
-        webcam.stop();
-        if(cameraFrame!= null){
-            clearMask = true;
-            detectFace = false;
-            cancelAnimationFrame(cameraFrame);
-        }
-        isVideo = false;
-        switchSource();
-        cameraStopped(true);
-        console.log("webcam stopped");
-    }        
-});
-
-$("#arrowLeft").click(function () {
-    let itemWidth = parseInt($("#mask-list ul li").css("width")) 
-                    + parseInt($("#mask-list ul li").css("margin-left")) 
-                    + parseInt($("#mask-list ul li").css("margin-right"));
-    let marginLeft = parseInt($("#mask-list ul").css("margin-left"));
-    $("#mask-list ul").css({"margin-left": (marginLeft+itemWidth) +"px", "transition": "0.3s"});
-});
-
-$("#arrowRight").click(function () {
-    let itemWidth = parseInt($("#mask-list ul li").css("width")) 
-    + parseInt($("#mask-list ul li").css("margin-left")) 
-    + parseInt($("#mask-list ul li").css("margin-right"));
-    let marginLeft = parseInt($("#mask-list ul").css("margin-left"));
-    $("#mask-list ul").css({"margin-left": (marginLeft-itemWidth) +"px", "transition": "0.3s"});
-});
-
 $("#mask-list ul li").click(function () {
     $(".selected-mask").removeClass("selected-mask");
     $(this).addClass("selected-mask");
@@ -145,7 +98,7 @@ function drawMask(predictions){
             }
             else{
                 dots = [];
-                maskElement = $("<img src='"+selectedMask.attr('src')+"' id='mask_"+x+"' class='mask' />");
+                maskElement = $("<img src='images/draken.png' id='mask_"+x+"' class='mask' />");
                 masks.push({
                     keypoints: dots,
                     maskElement: maskElement
@@ -167,23 +120,14 @@ function drawMask(predictions){
                 dot.top = coordinate[1];
                 dot.element.css({top:dot.top, left:dot.left, position:'absolute'});
             }
-            maskType = selectedMask.attr("data-mask-type");
-            switch(maskType) {
-                case 'full':
-                    maskCoordinate= {top: dots[overheadIndex].top, left: dots[leftCheekIndex].left};
-                    maskHeight = (dots[chinIndex].top - dots[overheadIndex].top) ;
-                    break;
-                case 'half':
-                default:
-                    maskCoordinate = dots[leftCheekIndex];
-                    maskHeight = (dots[chinIndex].top - dots[leftCheekIndex].top) ;
-                    break;
-            }
+            maskCoordinate= {top: dots[overheadIndex].top, left: dots[leftCheekIndex].left};
+            maskHeight = (dots[chinIndex].top - dots[overheadIndex].top) ;
             maskWidth = (dots[rightCheekIndex].left - dots[leftCheekIndex].left) ;
-            maskSizeAdjustmentWidth = parseFloat(selectedMask.attr("data-scale-width"));
-            maskSizeAdjustmentHeight = parseFloat(selectedMask.attr("data-scale-height"));
-            maskSizeAdjustmentTop = parseFloat(selectedMask.attr("data-top-adj"));
-            maskSizeAdjustmentLeft = parseFloat(selectedMask.attr("data-left-adj"));
+
+            maskSizeAdjustmentWidth = 1.8;
+            maskSizeAdjustmentHeight = 1.8;
+            maskSizeAdjustmentTop = 0.2;
+            maskSizeAdjustmentLeft = 0;
             
             maskTop = maskCoordinate.top - ((maskHeight * (maskSizeAdjustmentHeight-1))/2) - (maskHeight * maskSizeAdjustmentTop);
             maskLeft = maskCoordinate.left - ((maskWidth * (maskSizeAdjustmentWidth-1))/2) + (maskWidth * maskSizeAdjustmentLeft);
@@ -245,3 +189,20 @@ function switchSource(){
 $(window).resize(function() {
     resizeCanvas();
 });
+
+function main() {
+    webcam.start()
+        .then(result =>{
+            isVideo = true;
+            cameraStarted();
+            switchSource();
+            console.log("webcam started");
+            maskOnImage = false;
+            startFaceMask();
+        })
+        .catch(err => {
+            displayError();
+        });
+}
+
+main();

@@ -19,13 +19,6 @@
 </head>
 <body>
     <main id="face-mask-app">
-        <div class="form-control webcam-start" id="webcam-control">
-                <label class="form-switch">
-                <input type="checkbox" id="webcam-switch">
-                <i></i> 
-                <span id="webcam-caption">Click to Start Camera</span>
-                </label>      
-        </div>
         <div id="image-container">
             <div id="canvas" width="640" height="480"></div>
             <div class="loading d-none">
@@ -35,25 +28,15 @@
                 </div>
             </div>
 
-            <div id="mask-slider">
-                <img id="arrowLeft" src="images/arrow-left.png">
-                <div id="mask-list">
-                    <ul>
-                        <li class="selected-mask"><img src="images/balthazar.png" class="full-mask" data-mask-type="full" data-scale-width="1.4" data-scale-height="1.4" data-top-adj="0" data-left-adj="0"></li>
-                        <li><img src="images/greger.png" class="full-mask" data-mask-type="full" data-scale-width="1.1" data-scale-height="1.1" data-top-adj="0" data-left-adj="0"></li>
-                    </ul>
-                </div>
-                <img id="arrowRight" src="images/arrow-right.png">
-            </div>
         </div>
-        
+
         
         <div id="errorMsg" class="col-12 col-md-6 alert-danger d-none">
             Fail to start camera, please allow permision to access camera. <br/>
             If you are browsing through social media built in browsers, you would need to open the page in Sarafi (iPhone)/ Chrome (Android)
             <button id="closeError" class="btn btn-primary ml-3">OK</button>
         </div>
-        <div class="md-modal md-effect-12">
+        <div class="md-modal md-effect-12 md-show">
             <div id="app-panel" class="app-panel md-content row p-0 m-0">     
                 <div id="webcam-container" class="webcam-container col-12 d-none p-0 m-0">
                     <video id="webcam" autoplay playsinline width="640" height="480"></video>

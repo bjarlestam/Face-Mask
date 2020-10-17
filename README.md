@@ -3,6 +3,10 @@ Image and Real time webcam face detection, protect yourself from COVID19 with a 
 
 Utilize tensorflowjs facemesh model.
 
+# Mesh index map
+https://github.com/tensorflow/tfjs-models/blob/master/facemesh/mesh_map.jpg
+
+
 ## Live Demo
 **[https://bensonruan.com/face-mask-for-trump-with-face-landmark-detection](https://bensonruan.com/face-mask-for-trump-with-face-landmark-detection)**
 

@@ -149,20 +149,20 @@ function getCoordinate(x,y){
             ratio = canvasElement.clientHeight/webcamElement.height;
             resizeX = x*ratio;
             resizeY = y*ratio;
-            $('#message').text('one');
+            $('#message').text('ett');
         }
         else if(window.innerWidth>=1024){
             ratio = 2;
             leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
             resizeX = x*ratio - leftAdjustment;
             resizeY = y*ratio;
-            $('#message').text('two');
+            $('#message').text('två');
         }
         else{
-            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.32
+            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
             resizeX = x - leftAdjustment;
             resizeY = y;
-            $('#message').text('three');
+            $('#message').text('tre');
         }
 
         return [resizeX, resizeY];

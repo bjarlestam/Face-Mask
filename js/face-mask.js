@@ -3,7 +3,6 @@ const canvasElement = document.getElementById('canvas');
 const imageElement = document.getElementById('faces');
 const webcam = new Webcam(webcamElement, 'user');
 let selectedMask = $(".selected-mask img");
-let isVideo = false;
 let model = null;
 let cameraFrame = null;
 let detectFace = false;
@@ -11,16 +10,6 @@ let clearMask = false;
 let maskOnImage = false;
 let masks = [];
 let maskKeyPointIndexs = [10, 234, 152, 454]; //overhead, left Cheek, chin, right cheek
-
-$("#mask-list ul li").click(function () {
-    $(".selected-mask").removeClass("selected-mask");
-    $(this).addClass("selected-mask");
-    selectedMask = $(".selected-mask img");
-    clearCanvas();
-    if(model !=null && isVideo == false && maskOnImage){
-        detectFaces();
-    }
-});
 
 
 $('#closeError').click(function() {
@@ -33,13 +22,11 @@ async function startFaceMask() {
     return new Promise((resolve, reject) => {
 
         webcamElement.addEventListener('loadeddata', async (event) => {
-            console.log('*************** loadeddata');
             $(".loading").removeClass('d-none');
             try {
                 model = await facemesh.load()
                 $(".loading").addClass('d-none');
-                console.log("model loaded");
-                if (isVideo && webcam.facingMode == 'user') {
+                if (webcam.facingMode === 'user') {
                     detectFace = true;
                 }
 
@@ -55,8 +42,8 @@ async function startFaceMask() {
 }
 
 async function detectFaces() {
-    let inputElement = isVideo? webcamElement : imageElement;
-    let flipHorizontal = isVideo;
+    let inputElement = webcamElement;
+    let flipHorizontal = true;
 
 
     await model.estimateFaces(inputElement, false, flipHorizontal).then(predictions => {
@@ -73,21 +60,15 @@ async function detectFaces() {
 }
 
 function drawMask(predictions){
-    console.log('*******');
-    console.log(predictions);
-    if(masks.length != predictions.length){
+    //console.log('*******');
+    //console.log(predictions);
+    if(masks.length !== predictions.length){
         clearCanvas();
     }   
     overheadIndex = 0;
     chinIndex = 2;
-    if(isVideo){
-        leftCheekIndex = 3;
-        rightCheekIndex = 1;
-    }
-    else{
-        leftCheekIndex = 1;
-        rightCheekIndex = 3;
-    }
+    leftCheekIndex = 3;
+    rightCheekIndex = 1;
     if (predictions.length > 0) {
         for (let x = 0; x < predictions.length; x++) {
             const keypoints = predictions[x].scaledMesh;  //468 key points of face;
@@ -137,40 +118,36 @@ function drawMask(predictions){
                 left: maskLeft,
                 width: maskWidth * maskSizeAdjustmentWidth,
                 height: maskHeight * maskSizeAdjustmentHeight,
-                position:'absolute'
+                position:'absolute',
+                opacity: 0.8
             });    
         }
     }
 }
 
 function getCoordinate(x,y){
-    if(isVideo){
-        if(webcam.webcamList.length === 1 || window.innerWidth/window.innerHeight >= webcamElement.width/webcamElement.height){
-            ratio = canvasElement.clientHeight/webcamElement.height;
-            resizeX = x*ratio;
-            resizeY = y*ratio;
-            $('#message').text('ett');
-        }
-        else if(window.innerWidth>=1024){
-            ratio = 2;
-            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
-            resizeX = x*ratio - leftAdjustment;
-            resizeY = y*ratio;
-            $('#message').text('två');
-        }
-        else{
-            ratio = 1.7;
-            leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
-            resizeX = x*ratio - leftAdjustment;
-            resizeY = y*ratio;
-            $('#message').text('triii');
-        }
-
-        return [resizeX, resizeY];
+    if(webcam.webcamList.length === 1 || window.innerWidth/window.innerHeight >= webcamElement.width/webcamElement.height){
+        ratio = canvasElement.clientHeight/webcamElement.height;
+        resizeX = x*ratio;
+        resizeY = y*ratio;
+        $('#message').text('ett');
+    }
+    else if(window.innerWidth>=1024){
+        ratio = 2;
+        leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
+        resizeX = x*ratio - leftAdjustment;
+        resizeY = y*ratio;
+        $('#message').text('två');
     }
     else{
-        return [x, y];
+        ratio = 1.7;
+        leftAdjustment = ((webcamElement.width/webcamElement.height) * canvasElement.clientHeight - window.innerWidth) * 0.38
+        resizeX = x*ratio - leftAdjustment;
+        resizeY = y*ratio;
+        $('#message').text('triii');
     }
+
+    return [resizeX, resizeY];
 }
 
 function clearCanvas(){
@@ -179,11 +156,9 @@ function clearCanvas(){
 }
 
 function switchSource(){
-    if(isVideo){
-        containerElement = $("#webcam-container");
-        $("#button-control").addClass("d-none");
-        resizeCanvas();
-    }
+    containerElement = $("#webcam-container");
+    $("#button-control").addClass("d-none");
+    resizeCanvas();
     $("#canvas").appendTo(containerElement);
     $(".loading").appendTo(containerElement);
     $("#mask-slider").appendTo(containerElement);
@@ -197,7 +172,6 @@ $(window).resize(function() {
 function main() {
     webcam.start()
         .then(result =>{
-            isVideo = true;
             cameraStarted();
             switchSource();
             console.log("webcam started");

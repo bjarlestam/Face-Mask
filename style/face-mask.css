@@ -271,3 +271,7 @@
         width: 100%;
     }
 }
+
+#webcam {
+    border: 2px solid red;
+}
